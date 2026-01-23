@@ -1,19 +1,28 @@
 const express = require("express");
+const connectDB = require("./config/database.js");
 const app = express();
 const port = 3000;
+app.use(express.json())
+const User = require("./models/user.js");
+app.post("/signup", async (req, res) => {
+  const user = new User(req.body)
+try {
+console.log(user)
+await user.save()
+res.send("user added successfully")
 
-// error handling btw we can use try ,catch block but here we also can use "err" in route handlers with req, res like this : -- (err, req, res) 
-app.get("/getUserData", (req, res) => {
-    throw new Error("heyerror")
-    res.send("user data sent!")
-});
-
-app.use("/", (err , req, res, next) => {
-    if(err){
-        res.status(500).send("something wrong!")
-    }
+}catch(err){
+  res.status(400).send("error in saving user in database ")
+}
 })
 
-app.listen(port, () => {
-  console.log(`server is listening on port ${port}`);
-});
+connectDB()
+  .then(() => {
+    console.log("db connected");
+    app.listen(port, () => {
+      console.log(`server is listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });

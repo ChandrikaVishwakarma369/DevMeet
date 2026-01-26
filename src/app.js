@@ -8,11 +8,11 @@ const User = require("./models/user.js");
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
   try {
-    console.log(user);
+    // console.log(user);
     await user.save();
     res.send("user added successfully");
   } catch (err) {
-    res.status(400).send("error in saving user in database ");
+    res.status(400).send(err.message);
   }
 });
 // user route where get specific user by one mail id 
@@ -53,11 +53,19 @@ app.delete("/user", async (req, res)=>{
 app.patch("/user", async (req,res) => {
   const userId = req.body.userId
   const data = req.body
+ 
   try {
-    await User.findByIdAndUpdate({_id : userId}, data)
+     const allowedUpdates = ["userId","photoURL", "about", "skills", "age", "gender"]
+  const isUpdateAllowed = Object.keys(data).every((update) => allowedUpdates.includes(update))
+  if(!isUpdateAllowed){
+    return res.status(400).send("invalid updates")
+  }
+    await User.findByIdAndUpdate({_id : userId}, data,{
+      runValidators : true,
+    })
     res.send("user data updated succesfully")
   }catch(err) {
-    res.status(400).send("error in updating ")
+    res.status(400).send("ERROR MESSAGE :" + err.message)
   }
 })
 connectDB()

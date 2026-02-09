@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const cookieParser = require("cookie-parser"); 
 const User = require("../models/user.js");
 authRouter.use(cookieParser());
+
 // signup route (API) for adding users
 authRouter.post("/signup", async (req, res) => {
   try {
@@ -31,6 +32,7 @@ authRouter.post("/signup", async (req, res) => {
     res.status(400).send("Error : "+ err.message);
   }
 });
+
 // login router
 authRouter.post("/login", async (req, res)=>{
 try {
@@ -55,4 +57,13 @@ try {
   res.status(400).send("ERROR :" + error.message)
 }
 })
+
+// logout router
+authRouter.post("/logout",async (req, res)=>{
+  res.cookie("token", null, {
+    expires : new Date(Date.now())
+  })
+  res.send("Logout Successfull!")
+})
+
 module.exports = authRouter;

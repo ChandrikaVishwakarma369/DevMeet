@@ -61,6 +61,8 @@ const userSchema = new mongoose.Schema({
     }
 },{ timestamps : true})
 
+userSchema.index({fristName : 1, lastName : 1})
+
 const User = mongoose.model('User', userSchema)
 
 module.exports = User
